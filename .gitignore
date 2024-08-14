@@ -1,0 +1,14 @@
+node_modules
+.env
+package-lock.json
+bin/
+#lockfiles
+package-lock.json
+yarn.lock
+yarn-error.log
+src/projects
+tests
+dist/
+coverage/
+.nyc_output
+.DS_Store
