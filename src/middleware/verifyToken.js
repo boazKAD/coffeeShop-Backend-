@@ -21,7 +21,7 @@ export const verifyUserToken = async (req, res, next) => {
     const payload = decodeToken(token);
     const { name } = payload;
     req.user = payload;
-    req.body.createdBy = payload._id;
+    req.body.createdBy = payload;
     if (name === "JsonWebTokenError") {
       return Response.errorMessage(
         res,
@@ -36,7 +36,7 @@ export const verifyUserToken = async (req, res, next) => {
       );
     }
 
-    const user = await UserModel.findOne({ _id: payload?.user?._id }).select(
+    const user = await UserModel.findOne({ _id: payload?.user }).select(
       "-password"
     );
     if (!user) {
@@ -46,22 +46,10 @@ export const verifyUserToken = async (req, res, next) => {
         status.UNAUTHORIZED
       );
     }
-    let logs = await changeLog.find({});
-    if (!logs.length) {
-      logs = await changeLog.create({});
-    }
-    let date = new Date(payload.iat * 1000);
-    const logout = date < logs[0].updatedAt;
-    if (logout) {
-      return Response.errorMessage(
-        res,
-        "Token expired due to system update please login",
-        status.UNAUTHORIZED
-      );
-    }
     req.user = user;
     req.token = token;
     req.body.createdBy = user._id;
+    
     return next();
   } catch (error) {
     console.log(error.message);

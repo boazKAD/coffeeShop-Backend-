@@ -93,7 +93,7 @@ export const loginUser = async (req, res) => {
     return Response.succesMessage(
       res,
       "Successfully logged in",
-      { user: { ...user?._doc }, token },
+      { token },
       status.OK
     );
   }
@@ -140,11 +140,6 @@ export const loginWithEmailAndNID = async (req, res) => {
         status.BAD_REQUEST
       );
     }
-
-    let shop;
-    if (user?.role?.toLowerCase() === "sales-agent" && user?.reference) {
-      shop = await AgentShopModal.findById(user.reference).select("-user");
-    }
     user.password = null;
     user.pin = null;
     const token = generateToken({ user });
@@ -152,7 +147,7 @@ export const loginWithEmailAndNID = async (req, res) => {
     return Response.succesMessage(
       res,
       "Successfully logged in",
-      { user: { ...user?._doc, shop }, token },
+      { token },
       status.OK
     );
   } catch (error) {
