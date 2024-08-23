@@ -11,7 +11,7 @@ const Schema = new mongoose.Schema(
     },
     product: {
       type: mongoose.Types.ObjectId,
-      ref: "product",
+      ref: "Product",
     },
     quantity: Number,
     createdBy: {
@@ -29,4 +29,11 @@ const Schema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+Schema.pre(/^find/, function (next) {
+  this.populate({
+    path: "product",
+  });
+
+  next();
+})
 export default mongoose.model("OrderItem", Schema);

@@ -18,16 +18,33 @@ export const deleteOneController = deleteOneById(OrderModel);
 
 export const createOder = async (req, res) => {
   try {
-    const { quantity, product } = req.body;
-    const orderItem = await orderItemModel.create({ quantity, product });
-    if (orderItem) {
-      const order = await OrderModel.create({ items: [orderItem._id] });
-      console.log(order);
-      return Response.succesMessage(res, "Order created successfully", order, httpStatus.OK);
+    const { items, totalPrice } = req.body;
+
+    const orderItems = await Promise.all(
+      items.map(async (item) => {
+        const { quantity, products } = item;
+        return await orderItemModel.create({
+          quantity,
+          product: products,
+        });
+      })
+    );
+
+    if (orderItems.length) {
+      const order = await OrderModel.create({
+        items: orderItems.map((item) => item._id),
+        totalPrice: totalPrice,
+      });
+      return Response.succesMessage(
+        res,
+        "Order created successfully",
+        order,
+        httpStatus.CREATED
+      );
     } else {
       return Response.errorMessage(
         res,
-        "Failed to create order item",
+        "Failed to create order items",
         httpStatus.CONFLICT
       );
     }
