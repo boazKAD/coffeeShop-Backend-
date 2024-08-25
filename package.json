@@ -2,7 +2,6 @@
   "name": "coffee-shop-server",
   "version": "1.0.0",
   "main": "index.js",
-  "type": "module",
   "scripts": {
     "start": "node ./src/server.js",
     "dev": "nodemon --exec babel-node ./src/server.js",

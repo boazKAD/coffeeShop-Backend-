@@ -526,7 +526,7 @@ export const addImage = (Model) => async (req, res) => {
       );
     }
   } catch (error) {
-    console.error(error.message);
+    console.error(error);
     Response.errorMessage(
       res,
       "Internal Server Error",
