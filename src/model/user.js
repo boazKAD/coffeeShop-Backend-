@@ -11,6 +11,10 @@ const Schema = new mongoose.Schema(
       default:
         "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png",
     },
+    account:  {
+      type: mongoose.Types.ObjectId,
+      ref: "Account",
+    },
     email: {
       type: String,
       required: true,
@@ -53,4 +57,11 @@ const Schema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+Schema.pre(/^find/, function (next) {
+  this.populate({
+    path: "account",
+  });
+
+  next();
+})
 export default mongoose.model("User", Schema);
