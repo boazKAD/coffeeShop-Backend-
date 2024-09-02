@@ -2,9 +2,13 @@ import { Router } from "express";
 import * as ProductController from "../controllers/productController";
 import { verifyUserToken } from "../middleware/verifyToken";
 import CheckMongoId from "../middleware/Validator/mustBeID";
+import * as multer from "../middleware/multer";
 
 const route = Router();
 route.use(verifyUserToken);
+route
+  .route("/upload")
+  .post(multer.upload.single("images"), ProductController.imageUpload);
 route
   .route("/")
   .post(ProductController.createController)

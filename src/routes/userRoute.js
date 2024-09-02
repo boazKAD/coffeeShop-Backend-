@@ -24,9 +24,10 @@ route.post(
   AuthValidator.validateInput,
   loginWithEmailAndNID
 );
+route.use(verifyUserToken);
 route.route("/reset/password-link").post(UserController.sendPasswordResetLink);
 route
-  .route("/reset/check-link/:resetToken")
+.route("/reset/check-link/:resetToken")
   .get(UserController.checkResetPasswordToken);
 route
   .route("/reset/password/:resetToken")
@@ -68,7 +69,6 @@ route
     UserController.deleteOneController
   );
 route.route("/agentCounts").get(UserController.getAgentsCounts);
-route.use(verifyUserToken);
 route.route("/profile").get(UserController.getProfile);
 
 export default route;
