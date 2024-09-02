@@ -9,21 +9,35 @@ const Schema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    account:  {
+      type: mongoose.Types.ObjectId,
+      ref: "Account",
+    },
     code: String,
     discount: Number,
     createdBy: {
       type: mongoose.Types.ObjectId,
-      ref: "user",
+      ref: "User",
     },
     updatedBy: {
       type: mongoose.Types.ObjectId,
-      ref: "user",
+      ref: "User",
     },
     deletedBy: {
       type: mongoose.Types.ObjectId,
-      ref: "user",
+      ref: "User",
     },
   },
   { timestamps: true }
 );
+Schema.pre(/^find/, function (next) {
+  this.populate({
+    path: "createdBy",
+  });
+  this.populate({
+    path: "account",
+  });
+
+  next();
+})
 export default mongoose.model("Promotion", Schema);

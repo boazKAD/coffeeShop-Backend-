@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-const Schema = new mongoose.Schema(
+
+const orderSchema = new mongoose.Schema(
   {
     isDeleted: {
       type: Boolean,
@@ -9,9 +10,17 @@ const Schema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    orderId: {
+      type: String,
+      unique: true,
+    },
     customer: {
       type: mongoose.Types.ObjectId,
-      ref: "user",
+      ref: "User",
+    },
+    account: {
+      type: mongoose.Types.ObjectId,
+      ref: "Account",
     },
     items: [
       {
@@ -23,30 +32,58 @@ const Schema = new mongoose.Schema(
     status: { type: String, default: "pending" },
     promotion: {
       type: mongoose.Types.ObjectId,
-      ref: "promotion",
+      ref: "Promotion",
     },
     createdBy: {
       type: mongoose.Types.ObjectId,
-      ref: "user",
+      ref: "User",
     },
     updatedBy: {
       type: mongoose.Types.ObjectId,
-      ref: "user",
+      ref: "User",
     },
     deletedBy: {
       type: mongoose.Types.ObjectId,
-      ref: "user",
+      ref: "User",
+    },
+    counter: {
+      type: Number, 
+      default: 0,
+    },
+    qid: {
+      type: String,
+      unique: true, 
+      sparse: true, 
     },
   },
   { timestamps: true }
 );
 
-Schema.pre(/^find/, function (next) {
-  this.populate({
-    path: "items",
-  });
+orderSchema.statics.getNextOrderId = async function () {
+  const result = await this.findOneAndUpdate(
+    { qid: "orderid_counter" },
+    { $inc: { counter: 1 } },
+    { new: true, upsert: true, fields: { counter: 1 } }
+  );
+  return result.counter;
+};
+orderSchema.pre("save", async function (next) {
+  if (this.isNew) {
+    try {
+      const nextOrderId = await this.constructor.getNextOrderId();
+      this.orderId = `#${String(nextOrderId).padStart(5, '0')}`;
+      next();
+    } catch (error) {
+      next(error);
+    }
+  } else {
+    next();
+  }
+});
 
+orderSchema.pre(/^find/, function (next) {
+  this.populate("items");
   next();
-})
+});
 
-export default mongoose.model("Order", Schema);
+export default mongoose.model("Order", orderSchema);

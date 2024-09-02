@@ -13,18 +13,22 @@ const Schema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "Product",
     },
+    account:  {
+      type: mongoose.Types.ObjectId,
+      ref: "Account",
+    },
     quantity: Number,
     createdBy: {
       type: mongoose.Types.ObjectId,
-      ref: "user",
+      ref: "User",
     },
     updatedBy: {
       type: mongoose.Types.ObjectId,
-      ref: "user",
+      ref: "User",
     },
     deletedBy: {
       type: mongoose.Types.ObjectId,
-      ref: "user",
+      ref: "User",
     },
   },
   { timestamps: true }
@@ -32,6 +36,9 @@ const Schema = new mongoose.Schema(
 Schema.pre(/^find/, function (next) {
   this.populate({
     path: "product",
+  });
+  this.populate({
+    path: "account",
   });
 
   next();

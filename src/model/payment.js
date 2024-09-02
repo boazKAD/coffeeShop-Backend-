@@ -13,23 +13,34 @@ const Schema = new mongoose.Schema(
       type: mongoose.Types.ObjectId,
       ref: "order",
     },
+    account:  {
+      type: mongoose.Types.ObjectId,
+      ref: "Account",
+    },
     amount: Number,
     paidOn: { type: Date, default: Date.now() },
     method: { type: String, enum: ['card', 'cash', 'online'],},
     status: { type: String, enum: ['pending', 'completed', 'failed'], default: 'pending' },
     createdBy: {
       type: mongoose.Types.ObjectId,
-      ref: "user",
+      ref: "User",
     },
     updatedBy: {
       type: mongoose.Types.ObjectId,
-      ref: "user",
+      ref: "User",
     },
     deletedBy: {
       type: mongoose.Types.ObjectId,
-      ref: "user",
+      ref: "User",
     },
   },
   { timestamps: true }
 );
+Schema.pre(/^find/, function (next) {
+  this.populate({
+    path: "account",
+  });
+
+  next();
+})
 export default mongoose.model("Payment", Schema);
