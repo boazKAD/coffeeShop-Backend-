@@ -10,10 +10,7 @@ const Schema = new mongoose.Schema(
       default: true,
     },
     name: String,
-    descreiption: String,
-    price: Number,
-    category: { type: String, enum: ["coffee", "tea", "snacks", "other"] },
-    imageUrl: String,
+    picture: String,
     createdBy: {
       type: mongoose.Types.ObjectId,
       ref: "user",
@@ -29,4 +26,4 @@ const Schema = new mongoose.Schema(
   },
   { timestamps: true }
 );
-export default mongoose.model("Acount", Schema);
+export default mongoose.model("Account", Schema);
